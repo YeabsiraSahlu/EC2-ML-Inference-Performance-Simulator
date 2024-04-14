@@ -1,106 +1,24 @@
-# EC2-ML-Inference-Performance-Simulator
-// App.java - A single file containing all classes for the EC2 ML Inference Performance Simulator (E-MIPS)
+# EC2 ML Inference Performance Simulator
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+## Overview
+The EC2 ML Inference Performance Simulator is a Java-based tool designed to simulate the performance of different AWS EC2 instance types, particularly focusing on the impact of AWS Inferentia chips on machine learning inference tasks. This simulator helps users evaluate the potential benefits of Inferentia-equipped instances compared to standard CPU-based instances in terms of computational power and performance efficiency.
 
-/**
- * Represents different types of EC2 instances, detailing their capabilities and whether they are equipped with AWS Inferentia.
- */
-class InstanceType {
-    private String name;
-    private boolean isInferentiaEnabled;
-    private double computePower;
+## Features
+- Simulate and compare the performance of various EC2 instances.
+- Evaluate the impact of AWS Inferentia chips on machine learning inference.
+- Easy to extend with more instance types and performance metrics.
 
-    public InstanceType(String name, boolean isInferentiaEnabled, double computePower) {
-        this.name = name;
-        this.isInferentiaEnabled = isInferentiaEnabled;
-        this.computePower = computePower;
-    }
+## Architecture
+The project is structured into several Java classes each responsible for a distinct part of the simulation process:
 
-    public String getName() {
-        return name;
-    }
+### InstanceType
+This class represents different types of EC2 instances. Each instance is characterized by its name, whether it is equipped with an AWS Inferentia chip, and a simplified compute power metric.
 
-    public boolean isInferentiaEnabled() {
-        return isInferentiaEnabled;
-    }
+### PerformanceMetrics
+Manages and stores the performance data for each instance type. It allows for adding new performance metrics and retrieving stored metrics for display.
 
-    public double getComputePower() {
-        return computePower;
-    }
-}
+### SimulationEngine
+The core class that orchestrates the setup and execution of performance simulations. It initializes the instances, simulates their performance based on predefined logic, and collects results.
 
-/**
- * Manages performance metrics for different EC2 instances, providing functionality to add and retrieve performance data.
- */
-class PerformanceMetrics {
-    private HashMap<String, Double> metrics;
-
-    public PerformanceMetrics() {
-        metrics = new HashMap<>();
-    }
-
-    public void addMetric(String instanceName, double performance) {
-        metrics.put(instanceName, performance);
-    }
-
-    public double getMetric(String instanceName) {
-        return metrics.getOrDefault(instanceName, 0.0);
-    }
-
-    public void printMetrics() {
-        metrics.forEach((instance, perf) -> {
-            System.out.println("Instance: " + instance + " - Inference Performance: " + perf);
-        });
-    }
-}
-
-/**
- * Simulation engine that manages the setup and execution of performance simulations for various instance types.
- */
-class SimulationEngine {
-    private List<InstanceType> instances;
-    private PerformanceMetrics performanceMetrics;
-
-    public SimulationEngine() {
-        instances = new ArrayList<>();
-        performanceMetrics = new PerformanceMetrics();
-    }
-
-    public void addInstanceType(InstanceType instance) {
-        instances.add(instance);
-    }
-
-    public void simulate() {
-        for (InstanceType instance : instances) {
-            double performance = calculatePerformance(instance);
-            performanceMetrics.addMetric(instance.getName(), performance);
-        }
-    }
-
-    private double calculatePerformance(InstanceType instance) {
-        return instance.getComputePower() * (instance.isInferentiaEnabled() ? 1.2 : 1.0);
-    }
-
-    public void displayResults() {
-        performanceMetrics.printMetrics();
-    }
-}
-
-/**
- * Main application class containing the entry point for the simulator. Sets up the simulation and displays the results.
- */
-public class App {
-    public static void main(String[] args) {
-        SimulationEngine engine = new SimulationEngine();
-        
-        engine.addInstanceType(new InstanceType("t2.micro", false, 1.0));
-        engine.addInstanceType(new InstanceType("c5.large", true, 2.0));
-        engine.addInstanceType(new InstanceType("inf1.xlarge", true, 3.5));
-
-        engine.simulate();
-        engine.displayResults();
-    }
-}
+### App
+Contains the `main` method, which serves as the entry point for the simulator. It sets up the simulation with predefined instance types, triggers the simulation process, and displays the results.
