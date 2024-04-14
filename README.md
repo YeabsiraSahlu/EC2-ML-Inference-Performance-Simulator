@@ -1,15 +1,106 @@
 # EC2-ML-Inference-Performance-Simulator
-Overview
-The EC2 ML Inference Performance Simulator is a Java-based tool designed to evaluate and compare the performance of machine learning inference tasks on AWS EC2 instances. This simulator specifically focuses on instances equipped with standard CPUs and those enhanced with AWS Inferentia chips, providing insights into the computational efficiency and cost-effectiveness of these configurations.
+// App.java - A single file containing all classes for the EC2 ML Inference Performance Simulator (E-MIPS)
 
-Features
-Simulation of ML Inference: Simulate machine learning inference on different EC2 instance types.
-Comparison Metrics: Compare performance between CPU-based instances and Inferentia-equipped instances.
-Scalable Architecture: Utilizes Java HashMaps for efficient data management, allowing easy updates and scalability.
-Data Structures and OOP Practices: Demonstrates the use of advanced data structures and object-oriented programming principles in a real-world application.
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
-Architecture
-InstanceType.java: Defines the properties of EC2 instances.
-PerformanceMetrics.java: Manages and stores performance data.
-SimulationEngine.java: Core logic for running simulations.
-App.java: Main entry point that sets up and triggers simulations.
+/**
+ * Represents different types of EC2 instances, detailing their capabilities and whether they are equipped with AWS Inferentia.
+ */
+class InstanceType {
+    private String name;
+    private boolean isInferentiaEnabled;
+    private double computePower;
+
+    public InstanceType(String name, boolean isInferentiaEnabled, double computePower) {
+        this.name = name;
+        this.isInferentiaEnabled = isInferentiaEnabled;
+        this.computePower = computePower;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean isInferentiaEnabled() {
+        return isInferentiaEnabled;
+    }
+
+    public double getComputePower() {
+        return computePower;
+    }
+}
+
+/**
+ * Manages performance metrics for different EC2 instances, providing functionality to add and retrieve performance data.
+ */
+class PerformanceMetrics {
+    private HashMap<String, Double> metrics;
+
+    public PerformanceMetrics() {
+        metrics = new HashMap<>();
+    }
+
+    public void addMetric(String instanceName, double performance) {
+        metrics.put(instanceName, performance);
+    }
+
+    public double getMetric(String instanceName) {
+        return metrics.getOrDefault(instanceName, 0.0);
+    }
+
+    public void printMetrics() {
+        metrics.forEach((instance, perf) -> {
+            System.out.println("Instance: " + instance + " - Inference Performance: " + perf);
+        });
+    }
+}
+
+/**
+ * Simulation engine that manages the setup and execution of performance simulations for various instance types.
+ */
+class SimulationEngine {
+    private List<InstanceType> instances;
+    private PerformanceMetrics performanceMetrics;
+
+    public SimulationEngine() {
+        instances = new ArrayList<>();
+        performanceMetrics = new PerformanceMetrics();
+    }
+
+    public void addInstanceType(InstanceType instance) {
+        instances.add(instance);
+    }
+
+    public void simulate() {
+        for (InstanceType instance : instances) {
+            double performance = calculatePerformance(instance);
+            performanceMetrics.addMetric(instance.getName(), performance);
+        }
+    }
+
+    private double calculatePerformance(InstanceType instance) {
+        return instance.getComputePower() * (instance.isInferentiaEnabled() ? 1.2 : 1.0);
+    }
+
+    public void displayResults() {
+        performanceMetrics.printMetrics();
+    }
+}
+
+/**
+ * Main application class containing the entry point for the simulator. Sets up the simulation and displays the results.
+ */
+public class App {
+    public static void main(String[] args) {
+        SimulationEngine engine = new SimulationEngine();
+        
+        engine.addInstanceType(new InstanceType("t2.micro", false, 1.0));
+        engine.addInstanceType(new InstanceType("c5.large", true, 2.0));
+        engine.addInstanceType(new InstanceType("inf1.xlarge", true, 3.5));
+
+        engine.simulate();
+        engine.displayResults();
+    }
+}
