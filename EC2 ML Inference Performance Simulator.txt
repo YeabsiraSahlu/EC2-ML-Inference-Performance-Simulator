@@ -1,0 +1,86 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+// This class defines EC2 instance types with properties such as name, whether it has an AWS Inferentia chip, and compute power.
+class InstanceType {
+    private String name;
+    private boolean hasInferentia;
+    private int computePower;
+
+    public InstanceType(String name, boolean hasInferentia, int computePower) {
+        this.name = name;
+        this.hasInferentia = hasInferentia;
+        this.computePower = computePower;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean hasInferentia() {
+        return hasInferentia;
+    }
+
+    public int getComputePower() {
+        return computePower;
+    }
+}
+
+// Manages performance metrics by storing and retrieving performance data associated with each instance type.
+class PerformanceMetrics {
+    private Map<String, Double> metrics = new HashMap<>();
+
+    public void addPerformanceMetric(String instanceName, double performance) {
+        metrics.put(instanceName, performance);
+    }
+
+    public Double getPerformanceMetric(String instanceName) {
+        return metrics.get(instanceName);
+    }
+}
+
+// Simulates the performance of various EC2 instance types and stores results using the PerformanceMetrics class.
+class SimulationEngine {
+    private List<InstanceType> instances = new ArrayList<>();
+    private PerformanceMetrics metrics = new PerformanceMetrics();
+
+    public void setupInstances() {
+        instances.add(new InstanceType("c5.large", false, 100));
+        instances.add(new InstanceType("inf1.xlarge", true, 300));
+    }
+
+    public void simulate() {
+        for (InstanceType instance : instances) {
+            double performance = simulateInstancePerformance(instance);
+            metrics.addPerformanceMetric(instance.getName(), performance);
+        }
+    }
+
+    private double simulateInstancePerformance(InstanceType instance) {
+        double basePerformance = instance.getComputePower();
+        if (instance.hasInferentia()) {
+            basePerformance *= 1.5; // Assuming 50% performance boost with Inferentia
+        }
+        return basePerformance;
+    }
+
+    public PerformanceMetrics getMetrics() {
+        return metrics;
+    }
+}
+
+// Entry point for the simulation, sets up instances and runs the simulation, then outputs results.
+public class App {
+    public static void main(String[] args) {
+        SimulationEngine engine = new SimulationEngine();
+        engine.setupInstances();
+        engine.simulate();
+
+        PerformanceMetrics metrics = engine.getMetrics();
+        metrics.getMetrics().forEach((instance, performance) -> {
+            System.out.println("Instance: " + instance + ", Performance: " + performance);
+        });
+    }
+}
